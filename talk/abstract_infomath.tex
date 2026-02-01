@@ -1,0 +1,84 @@
+\documentclass[twoside]{article}
+\usepackage{amsmath,amssymb,graphicx}
+\usepackage{hyperref}
+\pagestyle{empty}
+
+%------------------------------------------------------------
+\begin{document}
+
+%%%%%%%%% TITLE of abstract %%%%%%%%%
+
+\begin{center}
+	\textbf{\large An introduction to Julia as a tool in scientific computing}
+\end{center}
+
+%%%%%%%%%  SPEAKER %%%%%%%%%
+
+\begin{center}
+	Luiz M. Faria\\
+	\emph{INRIA, Laboratoire POEMS}\\
+	\texttt{luiz.maltez-faria@inria.fr}
+\end{center}
+
+\bigskip
+
+%%%%%%%%%  text of ABSTRACT to be included below  %%%%%%
+\noindent
+
+In this presentation, we will take a look at the Julia programming language as a tool for
+scientific computing. Julia's central promise is to combine performance comparable to that
+of lower-level languages like C or Fortran with the usability of higher-level languages like
+Python or Matlab. The goal of this talk is to introduce the language and examine this claim
+empirically, through a simple but representative example.
+
+After taking a shallow dive into the main language features, we will focus on the concrete
+problem of computing the many-body interactions in a gravitational system (the $N$-body
+problem). The naive algorithm is essentially a double loop over the particles, and its large
+arithmetic intensity ($\mathcal{O}(N^2)$ flops with $\mathcal{O}(N)$ bytes) makes it a good
+candidate for performance exploration and optimization. We will explore the implementation
+in Julia, C, and Python, and compare their performance and readability. We will then move on
+to optimizing the Julia code by using (i) SIMD instructions and (ii)
+multi-threading. Finally, we will showcase how Julia's high-level abstractions --- in
+particular parametric types and multiple dispatch --- can be used to make the code more
+generic and reusable without sacrificing performance. At the end, I will share some thoughts
+on where I think Julia shines, and where it falls short compared to more mature languages
+like C++.
+
+\paragraph{Note:} If you want to try some of the examples live, feel free to
+\href{https://julialang.org/downloads/}{install Julia} before the talk! And for an IDE-like
+experience, you can also install e.g. \href{https://www.julia-vscode.org/}{the Julia extension for
+	VS Code}.
+
+
+%%%%%%%%%  end text of ABSTRACT   %%%%%%%%%%
+
+\bigskip
+
+% %%%%%%%%%  REFERENCES %%%%%%%%
+
+\smallskip
+
+%PAPER
+%\bibliographystyle{plain}
+%\bibliography{references}
+
+% \noindent
+% \textbf{References}
+% \begin{enumerate}
+%  \item[\rm{[1]}]
+%  L. M. Faria, C. Pérez-Arancibia, M. Bonnet. ``General-purpose kernel
+%  regularization of boundary integral equations via density interpolation".
+%  \textit{Computer methods in applied mechanics and engineering}, 2021.
+% \end{enumerate}
+
+% % %%%%%% CO-AUTHORS %%%%%%%
+% \hrule
+% \medskip
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,521 @@
+\documentclass{beamer}
+
+\newcommand{\by}{\boldsymbol{y}} 
+\newcommand{\bx}{\boldsymbol{x}}
+\newcommand{\br}{\boldsymbol{r}}
+\newcommand{\pder}[2]{\partial_{#2}#1}
+\newcommand{\de}{\mathrm{d}}
+\newcommand{\bn}{\bold{n}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\btau}{\boldsymbol{\tau}}
+\newcommand{\x}{{\mathbf x}}
+\newcommand{\y}{{\mathbf y}}
+\newcommand{\tvarphi}{{\widetilde{\varphi}}}
+\newcommand\jump[1]{\llbracket{#1}\rrbracket}
+
+\definecolor{vertB}{RGB}{20, 148, 20}
+
+\newcommand{\hney}{\hat{\boldsymbol{y}}} 
+\newcommand{\hnex}{\hat{\boldsymbol{x}}}
+
+\newcommand{\htau}{\hat{\tau}}
+
+\newcommand{\?}{\stackrel{?}{=}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome5}
+\usepackage[style=authoryear]{biblatex}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{stmaryrd}
+
+\newtheorem{prop}{Proposition}
+
+\newcommand\warning{%
+ \makebox[1.4em][c]{%
+ \makebox[0pt][c]{\raisebox{.1em}{\small!}}%
+ \makebox[0pt][c]{\color{red}\Large$\bigtriangleup$}}}%
+
+\bibliography{refs.bib}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    % \tableofcontents[currentsection,hideallsubsections]
+    \tableofcontents[currentsection]
+    % remove number from frame
+    \addtocounter{framenumber}{-1}
+    % do not show page number on slide
+    % \thispagestyle{empty}
+  \end{frame}
+  
+}
+
+\setbeamertemplate{navigation symbols}{} % turn off navigation symbols
+
+\usetheme{Madrid}%
+\usecolortheme{seahorse}
+
+% %Information to be included in the title page:
+\title[Intro to Julia]{Introduction to Julia as a tool in scientific computing} \author{Luiz
+  M. Faria} \institute[INRIA]{InfoMath seminar, LJLL}
+\date{\today}
+
+\titlegraphic{
+    \includegraphics[height=0.8cm]{./poems-logo.png}         \quad
+    \includegraphics[height=0.8cm]{./inr_logo_grisbleu.png}  \quad
+    \includegraphics[height=0.8cm]{./cnrs-logo.png} \quad 
+    \includegraphics[height=0.8cm]{./Logo_ENSTA_Paris.jpg}
+}
+
+\newcommand{\colorcite}[1]{\textcolor{gray!50}{\parencite{#1}}}
+
+\begin{document}
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+\section{Introduction}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{What is Julia?}
+	\begin{itemize}
+		\item Julia is a programming language with a \alert{focus on scientific computing}
+		\item First released in 2012, version 1.0 in 2018
+		\item Open source (MIT license)
+		\item Central promise: combine performance of C with usability of Python
+		\item Addresses the \alert{two-language problem}: prototype in high-level language,
+		      rewrite in low-level for performance
+	\end{itemize}
+	\vfill
+	\centering
+	\includegraphics[height=1.5cm]{julia-logo.png}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Using Julia}
+
+	\begin{itemize}
+		\item Installation: \href{julialang.org/downloads}{julialang.org/downloads}
+		\item Basic usage: type \texttt{julia} in a terminal to open a \textbf{REPL}
+		\item IDE: \textbf{VS Code} with \texttt{Julia} extension
+	\end{itemize}
+
+	\begin{block}{Live demo}
+		\begin{enumerate}
+			\item \textbf{REPL}: interactive exploration, basic syntax, help system
+			\item \textbf{VS Code}: realistic workflow for larger projects
+		\end{enumerate}
+	\end{block}
+	\vspace{1em}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Main language features}
+	Core features:
+	\begin{itemize}
+		\item Dynamic typing with optional type annotations
+		\item Just-In-Time (JIT) compilation via LLVM
+		\item \alert{Multiple dispatch} as core paradigm
+		\item \alert{Parametric types} for generic programming
+	\end{itemize}
+
+
+	Nice bonuses:
+	\begin{itemize}
+		\item Native Unicode support ($\alpha$, $\beta$, $\in$, \ldots)
+		\item Easy interoperability with C, Fortran, Python
+		\item Built-in tooling infrastructure (package manager, testing, ...)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Dynamic typing}
+	\textbf{Static typing} (C, Java, Rust):
+	\begin{itemize}
+		\item Types declared at compile time: \texttt{int x = 5;}
+		\item Compiler checks types before running
+	\end{itemize}
+	\vspace{0.5em}
+	\textbf{Dynamic typing} (Python, Julia):
+	\begin{itemize}
+		\item Types belong to \emph{values}, not variables
+		\item \texttt{x = 5} then \texttt{x = "hello"} is valid
+		\item Type checked at runtime
+	\end{itemize}
+	\vspace{0.5em}
+	\begin{block}{Julia's twist}
+		Dynamically typed, but the JIT compiler \alert{infers types} and generates specialized code $\Rightarrow$ flexibility + performance
+	\end{block}
+\end{frame}
+
+
+
+% ---------------------------------------------------------------------------
+
+\section{The N-body problem}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{Problem description}
+	\begin{itemize}
+		\item $N$ particles with masses $m_i$, positions $\mathbf{x}_i$, velocities $\mathbf{v}_i$
+		\item Newton's law of gravitation --- force on particle $i$:
+		      \[
+			      \mathbf{F}_i = \sum_{j \neq i} \frac{G m_i m_j}{|\mathbf{x}_j - \mathbf{x}_i|^3} (\mathbf{x}_j - \mathbf{x}_i)
+		      \]
+		\item Equations of motion:
+		      \[
+			      \frac{\mathrm{d} \mathbf{x}_i}{\mathrm{d} t} = \mathbf{v}_i, \qquad
+			      \frac{\mathrm{d} \mathbf{v}_i}{\mathrm{d} t} = \frac{\mathbf{F}_i}{m_i}
+		      \]
+		\item Goal: compute accelerations $\mathbf{a}_i = \mathbf{F}_i / m_i$ for all particles
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Why this benchmark?}
+	\begin{itemize}
+		\item Simple algorithm: double loop over particles
+		\item High arithmetic intensity:
+		      \begin{itemize}
+			      \item $\mathcal{O}(N^2)$ floating point operations
+			      \item $\mathcal{O}(N)$ memory
+		      \end{itemize}
+		\item Good candidate for performance exploration
+		\item Representative of many scientific computing kernels
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\section{Implementations}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{The algorithm}
+	\begin{itemize}
+		\item Naive approach: double loop over all particle pairs
+		\item For each particle $i$, sum contributions from all $j \neq i$
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{Pseudocode}
+		\texttt{for i = 1 to N:} \\
+		\quad \texttt{for j = 1 to N:} \\
+		\quad \quad \texttt{if i $\neq$ j:} \\
+		\quad \quad \quad \texttt{accumulate force from j onto i}
+	\end{block}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Python implementation}
+	\begin{block}{Live demo}
+		Implement the N-body kernel in Python (NumPy)
+	\end{block}
+	\vspace{1em}
+	\textbf{Characteristics:}
+	\begin{itemize}
+		\item Clean, readable syntax
+		\item NumPy for array operations
+		\item Interpreted $\Rightarrow$ slow for explicit loops
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{C implementation}
+	\begin{block}{Live demo}
+		Implement the N-body kernel in C
+	\end{block}
+	\vspace{1em}
+	\textbf{Characteristics:}
+	\begin{itemize}
+		\item Fast, compiled code
+		\item Manual memory management (\texttt{malloc}/\texttt{free})
+		\item More verbose, lower-level
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Julia implementation}
+	\begin{block}{Live demo}
+		Implement the N-body kernel in Julia
+	\end{block}
+	\vspace{1em}
+	\textbf{Characteristics:}
+	\begin{itemize}
+		\item Syntax similar to Python/Matlab
+		\item JIT compiled $\Rightarrow$ performance similar to C?
+		\item No manual memory management
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Performance comparison}
+	\begin{center}
+		\begin{tabular}{lcc}
+			\hline
+			\textbf{Language} & \textbf{Time (s)} & \textbf{Lines of code} \\
+			\hline
+			Python (loops)    & ???               & ???                    \\
+			Python (NumPy)    & ???               & ???                    \\
+			C                 & ???               & ???                    \\
+			Julia             & ???               & ???                    \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\vspace{1em}
+	\begin{itemize}
+		\item Fill in after live demo!
+		\item Key question: does Julia deliver on its promise?
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\section{Optimizing Julia}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{Can we go faster?}
+	\begin{itemize}
+		\item Naive Julia is already fast, but modern CPUs offer more
+		\item Two main avenues for optimization:
+		      \begin{enumerate}
+			      \item \textbf{SIMD}: use vector instructions (single core)
+			      \item \textbf{Multi-threading}: use multiple cores
+		      \end{enumerate}
+		\item Julia makes both relatively easy
+		\item But first: \alert{measure before you optimize!}
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Profiling and debugging}
+	\textbf{Benchmarking:}
+	\begin{itemize}
+		\item \texttt{@time}, \texttt{@elapsed} --- quick timing
+		\item \texttt{BenchmarkTools.jl}: \texttt{@btime}, \texttt{@benchmark} --- accurate microbenchmarks
+	\end{itemize}
+	\vspace{0.5em}
+	\textbf{Profiling:}
+	\begin{itemize}
+		\item \texttt{@profile} + \texttt{Profile.print()} --- built-in sampling profiler
+		\item \texttt{ProfileView.jl}, \texttt{PProf.jl} --- flame graphs
+	\end{itemize}
+	\vspace{0.5em}
+	\textbf{Code inspection:}
+	\begin{itemize}
+		\item \texttt{@code\_warntype} --- check for type instabilities
+		\item \texttt{@code\_native}, \texttt{@code\_llvm} --- inspect generated code
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{SIMD instructions}
+	\begin{itemize}
+		\item \textbf{S}ingle \textbf{I}nstruction, \textbf{M}ultiple \textbf{D}ata
+		\item Process 4, 8, or 16 floats in a single CPU instruction
+		\item Example: AVX2 (256-bit), AVX-512 (512-bit)
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{In Julia}
+		\begin{itemize}
+			\item Compiler can auto-vectorize (sometimes)
+			\item \texttt{@simd} macro for hints
+			\item \texttt{LoopVectorization.jl} (\texttt{@turbo}) for explicit SIMD
+		\end{itemize}
+	\end{block}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Multi-threading}
+	\begin{itemize}
+		\item Julia has built-in threading support (since v1.3)
+		\item Start Julia with: \texttt{julia -t auto} or \texttt{julia -t 8}
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{In Julia}
+		\begin{itemize}
+			\item \texttt{Threads.@threads for ...} --- simple loop parallelism
+			\item \texttt{Threads.@spawn} --- task-based parallelism
+			\item Our N-body loop is embarrassingly parallel!
+		\end{itemize}
+	\end{block}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Optimization results}
+	\begin{center}
+		\begin{tabular}{lcc}
+			\hline
+			\textbf{Version}       & \textbf{Time (s)} & \textbf{Speedup} \\
+			\hline
+			Julia (naive)          & ???               & 1$\times$        \\
+			Julia (SIMD)           & ???               & ???              \\
+			Julia (threads)        & ???               & ???              \\
+			Julia (SIMD + threads) & ???               & ???              \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\vspace{1em}
+	\begin{itemize}
+		\item Fill in after live demo!
+		\item SIMD and threading gains are often multiplicative
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\section{Julia's abstractions}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{Beyond performance: code reusability}
+	\begin{itemize}
+		\item Fast code is good, but what about \alert{maintainable} code?
+		\item Can we write generic code that works for different:
+		      \begin{itemize}
+			      \item Floating point types? (\texttt{Float32}, \texttt{Float64}, \texttt{BigFloat})
+			      \item Dimensions? (2D, 3D)
+			      \item Interaction kernels? (gravity, electrostatics, ...)
+		      \end{itemize}
+		\item Julia's type system enables this \alert{without sacrificing performance}
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Multiple dispatch}
+	\begin{itemize}
+		\item Core paradigm in Julia: functions specialize on \alert{all} argument types
+		\item Different from OOP (single dispatch): method belongs to \emph{function}, not class
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{Example}
+		\texttt{+(a::Int, b::Int)} \quad vs \quad \texttt{+(a::Float64, b::Float64)} \\[0.5em]
+		Same function name, different implementations based on types
+	\end{block}
+	\vspace{1em}
+	\begin{itemize}
+		\item Enables extensibility: add new types without modifying existing code
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Parametric types}
+	\begin{itemize}
+		\item Types can have parameters:
+		      \begin{itemize}
+			      \item \texttt{Vector\{Float64\}}, \texttt{Vector\{Float32\}}, \texttt{Vector\{Int\}}
+			      \item \texttt{Matrix\{T\}}, \texttt{Array\{T,N\}}
+		      \end{itemize}
+		\item Write functions that work with \emph{any} concrete type \texttt{T}
+		\item Compiler generates specialized code for each \texttt{T} used
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{N-body example}
+		Define \texttt{Particle\{T\}} with position/velocity of type \texttt{T} \\
+		Same code works for \texttt{Float32}, \texttt{Float64}, or custom types!
+	\end{block}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Generic and fast}
+	\begin{itemize}
+		\item Combine multiple dispatch + parametric types:
+		      \begin{itemize}
+			      \item Write \alert{abstract}, reusable algorithms
+			      \item Compiler generates \alert{specialized}, fast code
+		      \end{itemize}
+		\item No runtime dispatch overhead for concrete types
+		\item This is how Julia's standard library achieves both genericity and speed
+	\end{itemize}
+	\vspace{1em}
+	\begin{block}{Live demo}
+		Refactor N-body to be generic over particle type and interaction kernel
+	\end{block}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\section{Conclusions}
+
+% ---------------------------------------------------------------------------
+\begin{frame}
+	\frametitle{Where Julia shines}
+	\begin{itemize}
+		\item \textbf{Scientific computing}: numerical analysis, simulations, data science
+		\item \textbf{Prototyping $\rightarrow$ production}: no need to rewrite in C/C++
+		\item \textbf{Composability}: packages work together seamlessly (thanks to multiple dispatch)
+		\item \textbf{Interoperability}: call C, Fortran, Python directly
+		\item \textbf{Differentiable programming}: autodiff works on (almost) arbitrary code
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Where Julia falls short}
+	\begin{itemize}
+		\item \textbf{Time-to-first-X}: JIT compilation adds latency on first run
+		      \begin{itemize}
+			      \item Improving with each release (precompilation, package images)
+		      \end{itemize}
+		\item \textbf{Smaller ecosystem}: fewer libraries than Python (but growing)
+		\item \textbf{Younger tooling}: debugger, profiler less mature than C++/Python
+		\item \textbf{Not for everything}: web dev, mobile apps, systems programming
+	\end{itemize}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+\begin{frame}
+	\frametitle{Summary}
+	\begin{itemize}
+		\item Julia delivers on its promise: \alert{performance + usability}
+		\item N-body example:
+		      \begin{itemize}
+			      \item Python-like syntax, C-like speed
+			      \item Easy optimization (SIMD, threads)
+			      \item Generic code without performance penalty
+		      \end{itemize}
+		\item Worth considering for your next scientific computing project!
+	\end{itemize}
+	\vfill
+	\centering
+	\includegraphics[height=1cm]{julia-logo.png}\\[1em]
+	\textbf{Questions?}
+\end{frame}
+% ---------------------------------------------------------------------------
+
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% jinx-local-words: "Overview"
+%%% End:
