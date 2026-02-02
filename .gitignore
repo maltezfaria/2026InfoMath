@@ -1,0 +1,10 @@
+talk/build/
+
+# don't commit Manifest.toml
+Manifest.toml
+
+# c executable
+nbody_c
+
+
+.vscode/settings.json
