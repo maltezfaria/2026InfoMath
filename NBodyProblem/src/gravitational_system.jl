@@ -4,8 +4,8 @@
 A structure representing a gravitational N-body system.
 """
 struct GravitationalSystem{T <: Real}
-    positions::Matrix{T}
-    acceleration::Matrix{T}
+    positions::Matrix{T}    # N x 3 matrix of particle positions
+    acceleration::Matrix{T} # N x 3 matrix of particle accelerations
     masses::Vector{T}
     G::T
 end
