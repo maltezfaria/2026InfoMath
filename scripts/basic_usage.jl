@@ -33,5 +33,5 @@ I, E = quadgk(x -> exp(-x^2), 0, Inf) # numerical integration
 # In REPL, type ? to enter help mode
 
 ## Nice bonus: often it is Julia all the way down!
+@edit quadgk(x -> exp(-x^2), 0, Inf)
 @edit cos(0.1)
-@edit integrate(x -> log(norm(x)), dom)
