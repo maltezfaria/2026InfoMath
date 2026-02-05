@@ -3,30 +3,7 @@ function compute_forces!(
         x::Vector{Float64}, y::Vector{Float64}, z::Vector{Float64},
         m::Vector{Float64}, G::Float64 = 1.0
     )
-    N = length(m)
-    for i in 1:N
-        axi, ayi, azi = 0.0, 0.0, 0.0
-        xi, yi, zi = x[i], y[i], z[i]
-
-        for j in 1:N
-            xj, yj, zj = x[j], y[j], z[j]
-            if i != j
-                rx = xi - xj
-                ry = yi - yj
-                rz = zi - zj
-                d = sqrt(rx * rx + ry * ry + rz * rz)
-                c = G * m[j] / (d^3)
-                axi -= c * rx
-                ayi -= c * ry
-                azi -= c * rz
-            end
-        end
-
-        ax[i] = axi
-        ay[i] = ayi
-        az[i] = azi
-    end
-    return nothing
+    # TODO: Implement the N-body force computation
 end
 
 # Test case: 4 particles at corners of a unit square

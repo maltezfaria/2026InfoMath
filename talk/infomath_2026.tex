@@ -87,7 +87,7 @@
 
 % %Information to be included in the title page:
 \title[Intro to Julia]{Introduction to \alert{Julia} as a tool in \alert{scientific computing}} \author{Luiz
-  M. Faria} \institute[INRIA]{InfoMath seminar, LJLL}
+  M. Faria} \institute[INRIA]{InfoMath seminar, Sorbonne Université}
 \date{\today}
 
 \titlegraphic{
@@ -437,10 +437,9 @@
 				\begin{tabular}{l@{\hskip 2em}c@{\hskip 2em}c@{\hskip 2em}c}
 					\rowcolor{structure!20}
 					\textbf{Language} & \textbf{Time (s)} & \textbf{vs C} & \textbf{Gpair/s} \\[0.3em]
-					C                 & 0.13              & 1$\times$     & 0.77             \\[0.2em]
-					\rowcolor{green!10}
-					Julia             & 0.14              & 1.07$\times$  & 0.72             \\[0.2em]
-					Python (loops)    & 21                & 161$\times$   & 0.005            \\
+					C                 &                   & 1$\times$     &                  \\[0.2em]
+					Julia             &                   &               &                  \\[0.2em]
+					Python (loops)    &                   &               &                  \\
 				\end{tabular}
 			};
 		\end{tikzpicture}
@@ -713,9 +712,9 @@
 				\begin{tabular}{l@{\hskip 2em}c@{\hskip 2em}c}
 					\rowcolor{structure!20}
 					\textbf{Version}       & \textbf{Gpairs/s} & \textbf{Speedup} \\[0.3em]
-					Julia (plain)          & 0.65              & 1$\times$        \\[0.2em]
-					Julia (SIMD)           & 1.5               & 2.3              \\[0.2em]
-					Julia (SIMD + threads) & 8.58              & 12.4             \\
+					Julia (plain)          &                   & 1$\times$        \\[0.2em]
+					Julia (SIMD)           &                   &                  \\[0.2em]
+					Julia (SIMD + threads) &                   &                  \\
 				\end{tabular}
 			};
 		\end{tikzpicture}
@@ -745,9 +744,9 @@
 				\begin{tabular}{l@{\hskip 2em}c@{\hskip 2em}c}
 					\rowcolor{structure!20}
 					\textbf{Version}                          & \textbf{Gpairs/s} & \textbf{Speedup} \\[0.3em]
-					Julia (SIMD + threads + \texttt{Float64}) & 8.58              & 1$\times$        \\[0.2em]
-					Julia (SIMD + threads + \texttt{Float32}) & 17.62             & 2.05             \\[0.2em]
-					Julia (SIMD + threads + \texttt{Float16}) & 34.89             & 4.06             \\
+					Julia (SIMD + threads + \texttt{Float64}) &                   & 1$\times$        \\[0.2em]
+					Julia (SIMD + threads + \texttt{Float32}) &                   &                  \\[0.2em]
+					Julia (SIMD + threads + \texttt{Float16}) &                   &                  \\
 				\end{tabular}
 			};
 		\end{tikzpicture}
